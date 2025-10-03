@@ -1,0 +1,334 @@
+/* =======================
+   FONT IMPORTS
+======================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Orbitron:wght@600;800&display=swap');
+
+/* =======================
+   ROOT VARIABLES (Dark Mode)
+======================= */
+:root {
+    --font-main: 'Inter', system-ui, sans-serif;
+    --font-mono: 'Orbitron', monospace;
+
+    /* Backgrounds */
+    --bg: #0a0f1d;
+    --bg-panel: rgba(18,23,40,0.9);
+    --bg-hover: rgba(255,255,255,0.03);
+
+    /* Text */
+    --text: #E5E9F0;
+    --muted: #7A8A99;
+    --accent: #4FD1FF;
+    --highlight: #1CA7FF;
+    --danger: #F87171;
+    --ok: #34D399;
+
+    /* Borders & Shadow */
+    --border: rgba(79,209,255,0.2);
+    --shadow: 0 8px 24px rgba(0,0,0,0.35);
+    --radius: 14px;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, var(--accent), var(--highlight));
+
+    /* Transitions */
+    --transition-speed: 0.3s;
+}
+
+/* =======================
+   LIGHT MODE VARIABLES
+======================= */
+body[data-theme="light"] {
+    --bg: #F8FAFC;
+    --bg-panel: #FFFFFF;
+    --bg-hover: rgba(0,0,0,0.03);
+
+    --text: #1F2937;
+    --muted: #64748B;
+    --accent: #1E40AF;
+    --highlight: #3B82F6;
+    --danger: #DC2626;
+    --ok: #16A34A;
+
+    --border: rgba(0,0,0,0.08);
+    --shadow: 0 6px 20px rgba(0,0,0,0.1);
+
+    --gradient-primary: linear-gradient(135deg, var(--accent), var(--highlight));
+}
+
+/* =======================
+   GLOBAL STYLES
+======================= */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+    height: 100%;
+    font-family: var(--font-main);
+    background: var(--bg);
+    color: var(--text);
+    transition: background var(--transition-speed), color var(--transition-speed);
+}
+
+/* =======================
+   HEADER
+======================= */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 24px;
+    background: var(--bg-panel);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.app-title {
+    font-family: var(--font-mono);
+    font-size: 26px;
+    letter-spacing: 2px;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.theme-toggle {
+    cursor: pointer;
+    font-size: 20px;
+    background: none;
+    border: none;
+    color: var(--text);
+}
+
+/* =======================
+   MAIN LAYOUT
+======================= */
+.app-main {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 24px;
+    padding: 24px;
+    max-width: 1800px;
+    margin: 0 auto;
+}
+
+.control-panel, .display-area {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 24px;
+    backdrop-filter: blur(10px);
+    transition: all var(--transition-speed);
+}
+
+.control-panel:hover {
+    background: var(--bg-hover);
+}
+
+/* =======================
+   SECTION TITLES
+======================= */
+.section-title {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    font-size: 20px;
+    color: var(--accent);
+    margin-bottom: 20px;
+}
+
+/* =======================
+   FORM ELEMENTS
+======================= */
+.form-group { margin-bottom: 18px; }
+
+label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+
+input[type="number"], select {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.2s;
+}
+
+body[data-theme="light"] input,
+body[data-theme="light"] select {
+    background: #f3f4f6;
+}
+
+input:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79,209,255,0.15);
+}
+
+body[data-theme="light"] input:focus,
+body[data-theme="light"] select:focus {
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+}
+
+/* =======================
+   BUTTONS
+======================= */
+.primary-btn {
+    padding: 14px;
+    width: 100%;
+    border: none;
+    border-radius: var(--radius);
+    background: var(--gradient-primary);
+    color: var(--bg);
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.primary-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(79,209,255,0.3);
+}
+
+.primary-btn:disabled {
+    background: rgba(128,128,128,0.2);
+    color: var(--muted);
+    cursor: not-allowed;
+}
+
+/* =======================
+   VISUALIZATION AREA
+======================= */
+.display-area {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+
+.viz-box {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    background: var(--bg-panel);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: background var(--transition-speed);
+}
+
+.viz-title {
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 16px;
+}
+
+.viz-map {
+    flex: 1;
+    min-height: 50vh;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+/* =======================
+   RESULTS PANEL
+======================= */
+.results-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.result-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    transition: background var(--transition-speed);
+}
+
+body[data-theme="light"] .result-card {
+    background: #f3f4f6;
+}
+
+.result-title {
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+
+.result-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+/* =======================
+   NOTIFICATIONS
+======================= */
+.notification-area {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 5000;
+}
+
+.notification {
+    background: var(--bg-panel);
+    border-left: 4px solid var(--accent);
+    color: var(--text);
+    padding: 14px 18px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    min-width: 280px;
+    backdrop-filter: blur(10px);
+    animation: notificationSlideIn 0.4s ease-out;
+}
+
+@keyframes notificationSlideIn {
+    from { opacity: 0; transform: translateX(30px);}
+    to { opacity: 1; transform: translateX(0);}
+}
+
+/* =======================
+   ANIMATIONS
+======================= */
+#resultsDisplay { animation: fadeIn 0.4s; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* =======================
+   RESPONSIVE DESIGN
+======================= */
+@media (max-width: 1200px) { .app-main { grid-template-columns: 360px 1fr; } }
+@media (max-width: 900px) { 
+    .app-main { grid-template-columns: 1fr; }
+    .display-area { min-height: 60vh; }
+}
+@media (max-width: 600px) { 
+    .app-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .app-title { font-size: 20px; }
+}
