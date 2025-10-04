@@ -1,9 +1,9 @@
-// script.js - Final Frontend Logic for the Impact Simulator
+// script.js - Updated Frontend Logic for Impact Simulator
 
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- CONFIGURATION ---
-    // IMPORTANT: This URL must match the address of your running Python backend.
+    // Update your backend URL accordingly
     const BACKEND_URL = 'https://asteroid-sim.onrender.com';
     let impactLocation = { lat: 28.7, lng: 77.1 }; // Default impact location
 
@@ -25,12 +25,14 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsDisplay: document.getElementById('resultsDisplay')
     };
 
-    // --- THEME & OVERLAY ---
+    // --- THEME TOGGLING ---
     elements.themeToggle.addEventListener('click', () => {
         const currentTheme = document.body.getAttribute('data-theme');
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         document.body.setAttribute('data-theme', newTheme);
     });
+
+    // --- Welcome Overlay ---
     elements.startBtn.addEventListener('click', () => {
         elements.welcomeOverlay.classList.add('hidden');
     });
@@ -38,19 +40,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- MAP SETUP ---
     const map = L.map('impact-map-container').setView([20, 0], 2);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; CartoDB', noWrap: true
+        attribution: '&copy; CartoDB',
+        noWrap: true
     }).addTo(map);
     
     let marker = L.marker(impactLocation, { draggable: true }).addTo(map);
     let craterCircle;
-    
-    marker.on('dragend', (event) => impactLocation = event.target.getLatLng());
+
+    // Dragging marker updates impact location
+    marker.on('dragend', (event) => {
+        impactLocation = event.target.getLatLng();
+    });
+
+    // Clicking map sets marker position and updates impact location
     map.on('click', (e) => {
         impactLocation = e.latlng;
         marker.setLatLng(impactLocation);
     });
 
-    // --- API & DATA HANDLING ---
+    // --- LOAD ASTEROID PRESETS ---
     async function loadAsteroidPresets() {
         try {
             const response = await fetch(`${BACKEND_URL}/asteroid_gallery`);
@@ -75,14 +83,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- EVENT LISTENERS ---
-    // IMPROVEMENT: Live slider updates
+    // --- LIVE SLIDER VALUE UPDATES ---
     ['diameter', 'velocity', 'angle'].forEach(id => {
         elements[id].addEventListener('input', (e) => {
             elements[`${id}Value`].textContent = e.target.value;
         });
     });
 
+    // --- ASTEROID PRESET SELECTION ---
     elements.asteroidSelect.addEventListener('change', (e) => {
         const selected = e.target.options[e.target.selectedIndex];
         elements.presetDescription.textContent = '';
@@ -92,14 +100,21 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.diameterValue.textContent = selected.dataset.diameter;
             elements.velocityValue.textContent = selected.dataset.velocity;
 
-            // IMPROVEMENT: Auto-fill density based on preset composition
+            // Autofill density based on composition, with defaults
             const composition = (selected.dataset.composition || 'stony').toLowerCase();
-            elements.density.value = { "stony": 2700, "stony-iron": 5000, "carbonaceous": 1400, "stony-metallic": 5000 }[composition] || 2700;
-            
+            elements.density.value = {
+                "stony": 2700,
+                "stony-iron": 5000,
+                "carbonaceous": 1400,
+                "stony-metallic": 5000
+            }[composition] || 2700;
+
             elements.presetDescription.textContent = `Preset loaded: ${selected.dataset.diameter} km, ${selected.dataset.velocity} km/s, ${composition} body.`;
+            elements.presetDescription.style.color = '';
         }
     });
 
+    // --- SIMULATE IMPACT CLICK ---
     elements.simulateBtn.addEventListener('click', async () => {
         const payload = {
             diameter_km: parseFloat(elements.diameter.value),
@@ -107,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
             density_kg_m3: parseFloat(elements.density.value),
             angle_degrees: parseFloat(elements.angle.value)
         };
-        
+
         elements.simulateBtn.disabled = true;
         elements.simulateBtn.textContent = 'CALCULATING...';
         elements.resultsDisplay.innerHTML = '<p class="console-text muted">Transmitting parameters...</p>';
@@ -119,7 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(payload)
             });
             if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
-            
+
             const results = await response.json();
             displayResults(results.impact_results);
         } catch (error) {
@@ -131,11 +146,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- UI DISPLAY FUNCTION ---
+    // --- DISPLAY RESULTS WITH EFFECTS ---
     function displayResults(impact) {
-        // IMPROVEMENT: "Typing" effect for results
         elements.resultsDisplay.innerHTML = `<p class="console-text success">Receiving report...</p>`;
-        
+
         const lines = [
             `> Impact Energy: <strong>${impact.calculated_energy_megatons_tnt.toLocaleString('en-US', {maximumFractionDigits: 2})} MT</strong>`,
             `> Crater Diameter: <strong>${impact.estimated_crater_diameter_km.toLocaleString('en-US', {maximumFractionDigits: 2})} km</strong>`,
@@ -152,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }, (index + 1) * 300);
         });
 
-        // IMPROVEMENT: Live map shockwave visualization
+        // Shockwave animation at impact location on map
         const mapContainer = document.getElementById('impact-map-container');
         const shockwave = document.createElement('div');
         shockwave.className = 'shockwave';
@@ -162,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
         mapContainer.appendChild(shockwave);
         setTimeout(() => shockwave.remove(), 1000);
 
-        // Draw crater on map
+        // Draw crater circle on map if diameter available
         if (craterCircle) craterCircle.remove();
         if (impact.estimated_crater_diameter_km > 0) {
             const craterRadiusMeters = impact.estimated_crater_diameter_km * 1000 / 2;
@@ -176,9 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- INITIALIZATION ---
+    // --- INITIALIZE ---
     loadAsteroidPresets();
+
 });
-
-// End of script.js
-
