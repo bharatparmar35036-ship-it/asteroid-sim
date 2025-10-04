@@ -10,7 +10,6 @@
     font-display: swap;
     src: url(https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hjp-Ek-_EeAmM.woff) format('woff');
 }
-
 /* Inter - 500 Medium */
 @font-face {
     font-family: 'Inter';
@@ -19,7 +18,6 @@
     font-display: swap;
     src: url(https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZRhjp-Ek-_EeAmM.woff) format('woff');
 }
-
 /* Inter - 700 Bold */
 @font-face {
     font-family: 'Inter';
@@ -28,7 +26,6 @@
     font-display: swap;
     src: url(https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZJhjp-Ek-_EeAmM.woff) format('woff');
 }
-
 /* Orbitron - 600 SemiBold */
 @font-face {
     font-family: 'Orbitron';
@@ -37,7 +34,6 @@
     font-display: swap;
     src: url(https://fonts.gstatic.com/s/orbitron/v16/yMJMMIlzdpvBhQQL_Qq7dys.woff2) format('woff2');
 }
-
 /* Orbitron - 800 ExtraBold */
 @font-face {
     font-family: 'Orbitron';
@@ -211,7 +207,6 @@ body[data-theme="light"] .app-footer { background: rgba(255,255,255,0.7); }
 /* =======================
    MAP & VISUALS
 ======================= */
-/* Essential */
 #impact-map-container {
     width: 100%;
     height: 400px;
@@ -219,12 +214,13 @@ body[data-theme="light"] .app-footer { background: rgba(255,255,255,0.7); }
     border: 1px solid var(--border);
     background: #0a0f1d;
     margin-bottom: 24px;
+    display: none; /* Map hidden until "Start Simulation" */
 }
 .viz-map { flex: 1; }
 .leaflet-container { background: #0a0f1d; }
 body[data-theme="light"] .leaflet-container { background: #e0e8f0; }
 
-/* IMPROVEMENT: Shockwave Animation */
+/* Shockwave Animation */
 .shockwave {
     border-radius: 50%;
     background: rgba(248, 113, 113, 0.7);
@@ -278,84 +274,11 @@ input:focus, select:focus {
     box-shadow: 0 0 0 3px rgba(79,209,255,0.15);
 }
 
-/* IMPROVEMENT: Custom Slider Styles */
+/* Custom Slider Styles */
 input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
     height: 8px;
     background: rgba(0,0,0,0.3);
     border-radius: 4px;
-    padding: 0;
-}
-input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    background: var(--accent);
-    border-radius: 50%;
-    cursor: pointer;
-    border: 3px solid var(--bg-panel);
-    transition: transform 0.2s;
-}
-input[type="range"]::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    background: var(--accent);
-    border-radius: 50%;
-    cursor: pointer;
-    border: 3px solid var(--bg-panel);
-}
-input[type="range"]:hover::-webkit-slider-thumb {
-    transform: scale(1.1);
-}
-
-.primary-btn {
-    padding: 14px;
-    width: 100%;
-    border: none;
-    border-radius: var(--radius);
-    background: var(--gradient-primary);
-    color: #000;
-    font-weight: 700;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.primary-btn:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(79,209,255,0.3);
-}
-.primary-btn:disabled {
-    background: rgba(128,128,128,0.2);
-    color: var(--muted);
-    cursor: not-allowed;
-}
-
-/* Results Console Styling */
-.results-console {
-    margin-top: 24px;
-    background: rgba(0,0,0,0.2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 16px;
-    min-height: 150px;
-    font-family: monospace;
-    font-size: 14px;
-    line-height: 1.6;
-}
-body[data-theme="light"] .results-console { background: #f3f4f6; }
-.console-text { animation: fadeIn 0.5s; margin-bottom: 8px;}
-.console-text.muted { color: var(--muted); }
-.console-text.success { color: var(--ok); }
-.console-text.error { color: var(--danger); }
-.preset-description { font-size: 12px; margin-top: 8px; color: var(--muted); }
-
-/* Animations & Responsive */
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@media (max-width: 900px) { 
-    .app-main { grid-template-columns: 1fr; }
-    .display-area { min-height: 60vh; }
-}
-
-/* End of style.css */
+    padding:
