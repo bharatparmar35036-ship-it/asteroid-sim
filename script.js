@@ -1,10 +1,10 @@
-// script.js - Updated Frontend Logic for Impact Simulator
+// script.js - Impact Simulator Final Logic
 
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- CONFIGURATION ---
-    // Update your backend URL accordingly
     const BACKEND_URL = 'https://asteroid-sim.onrender.com';
+    const API_KEY = 'kb2rQhWfRQWpsD5m6FmI90mDGeMn7pOASwqAiaYZ'; // place your API key here if needed
     let impactLocation = { lat: 28.7, lng: 77.1 }; // Default impact location
 
     // --- DOM ELEMENTS ---
@@ -25,14 +25,12 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsDisplay: document.getElementById('resultsDisplay')
     };
 
-    // --- THEME TOGGLING ---
+    // --- THEME & OVERLAY LOGIC ---
     elements.themeToggle.addEventListener('click', () => {
         const currentTheme = document.body.getAttribute('data-theme');
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         document.body.setAttribute('data-theme', newTheme);
     });
-
-    // --- Welcome Overlay ---
     elements.startBtn.addEventListener('click', () => {
         elements.welcomeOverlay.classList.add('hidden');
     });
@@ -40,31 +38,33 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- MAP SETUP ---
     const map = L.map('impact-map-container').setView([20, 0], 2);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; CartoDB',
-        noWrap: true
+        attribution: '&copy; CartoDB', noWrap: true
     }).addTo(map);
-    
+
     let marker = L.marker(impactLocation, { draggable: true }).addTo(map);
     let craterCircle;
 
-    // Dragging marker updates impact location
     marker.on('dragend', (event) => {
         impactLocation = event.target.getLatLng();
     });
-
-    // Clicking map sets marker position and updates impact location
     map.on('click', (e) => {
         impactLocation = e.latlng;
         marker.setLatLng(impactLocation);
     });
 
-    // --- LOAD ASTEROID PRESETS ---
+    // --- API & DATA HANDLING ---
     async function loadAsteroidPresets() {
         try {
-            const response = await fetch(`${BACKEND_URL}/asteroid_gallery`);
+            const response = await fetch(`${BACKEND_URL}/asteroid_gallery`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${API_KEY}`,
+                    'Content-Type': 'application/json'
+                }
+            });
             if (!response.ok) throw new Error('Network error');
             const data = await response.json();
-            
+
             elements.asteroidSelect.innerHTML = '<option value="">Custom Simulation</option>';
             data.asteroids.forEach(asteroid => {
                 const option = document.createElement('option');
@@ -78,19 +78,19 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("Failed to load presets:", error);
             elements.asteroidSelect.innerHTML = '<option value="">Could not load presets</option>';
-            elements.presetDescription.textContent = 'Error: Backend server appears to be offline.';
+            elements.presetDescription.textContent = 'Error: Backend server appears to be offline or invalid API key.';
             elements.presetDescription.style.color = 'var(--danger)';
         }
     }
 
-    // --- LIVE SLIDER VALUE UPDATES ---
+    // --- SLIDER VALUE DISPLAY UPDATES ---
     ['diameter', 'velocity', 'angle'].forEach(id => {
         elements[id].addEventListener('input', (e) => {
             elements[`${id}Value`].textContent = e.target.value;
         });
     });
 
-    // --- ASTEROID PRESET SELECTION ---
+    // --- ASTEROID SELECTION EVENT ---
     elements.asteroidSelect.addEventListener('change', (e) => {
         const selected = e.target.options[e.target.selectedIndex];
         elements.presetDescription.textContent = '';
@@ -100,21 +100,24 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.diameterValue.textContent = selected.dataset.diameter;
             elements.velocityValue.textContent = selected.dataset.velocity;
 
-            // Autofill density based on composition, with defaults
+            // Autofill density based on composition
             const composition = (selected.dataset.composition || 'stony').toLowerCase();
             elements.density.value = {
                 "stony": 2700,
                 "stony-iron": 5000,
                 "carbonaceous": 1400,
-                "stony-metallic": 5000
+                "stony-metallic": 5000,
+                "ice-rich": 900,
+                "rock-ice": 1500
             }[composition] || 2700;
 
-            elements.presetDescription.textContent = `Preset loaded: ${selected.dataset.diameter} km, ${selected.dataset.velocity} km/s, ${composition} body.`;
+            elements.presetDescription.textContent =
+                `Preset loaded: ${selected.dataset.diameter} km, ${selected.dataset.velocity} km/s, ${composition} body.`;
             elements.presetDescription.style.color = '';
         }
     });
 
-    // --- SIMULATE IMPACT CLICK ---
+    // --- IMPACT SIMULATION BUTTON EVENT ---
     elements.simulateBtn.addEventListener('click', async () => {
         const payload = {
             diameter_km: parseFloat(elements.diameter.value),
@@ -130,7 +133,10 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(`${BACKEND_URL}/calculate_impact`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Authorization': `Bearer ${API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify(payload)
             });
             if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
@@ -139,14 +145,15 @@ document.addEventListener('DOMContentLoaded', () => {
             displayResults(results.impact_results);
         } catch (error) {
             console.error("Simulation error:", error);
-            elements.resultsDisplay.innerHTML = `<p class="console-text error">Simulation Failed. Is the backend server running at ${BACKEND_URL}?</p>`;
+            elements.resultsDisplay.innerHTML =
+                `<p class="console-text error">Simulation Failed. Is the backend server running at ${BACKEND_URL}?<br>Check your API key and network.</p>`;
         } finally {
             elements.simulateBtn.disabled = false;
             elements.simulateBtn.textContent = 'LAUNCH';
         }
     });
 
-    // --- DISPLAY RESULTS WITH EFFECTS ---
+    // --- DISPLAY SIMULATION RESULTS ---
     function displayResults(impact) {
         elements.resultsDisplay.innerHTML = `<p class="console-text success">Receiving report...</p>`;
 
@@ -166,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }, (index + 1) * 300);
         });
 
-        // Shockwave animation at impact location on map
+        // Shockwave animation at impact location
         const mapContainer = document.getElementById('impact-map-container');
         const shockwave = document.createElement('div');
         shockwave.className = 'shockwave';
@@ -176,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
         mapContainer.appendChild(shockwave);
         setTimeout(() => shockwave.remove(), 1000);
 
-        // Draw crater circle on map if diameter available
+        // Draw crater on map
         if (craterCircle) craterCircle.remove();
         if (impact.estimated_crater_diameter_km > 0) {
             const craterRadiusMeters = impact.estimated_crater_diameter_km * 1000 / 2;
@@ -190,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- INITIALIZE ---
+    // --- INITIALIZATION ---
     loadAsteroidPresets();
 
 });
