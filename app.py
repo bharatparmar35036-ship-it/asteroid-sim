@@ -6,9 +6,9 @@ import json
 app = Flask(__name__)
 CORS(app)
 
-# Load asteroid data from local JSON file (replace with your actual file/path)
+# Load asteroid data from local JSON file
 with open('asteroid_data.json', 'r') as f:
-    ASTEROID_PRESETS = json.load(f)  # Should be a list of asteroid dicts
+    ASTEROID_PRESETS = json.load(f)
 
 @app.route('/asteroid_gallery', methods=['GET'])
 def asteroid_gallery():
@@ -28,13 +28,14 @@ def calculate_impact():
         if diameter_km <= 0 or velocity_km_s <= 0 or density_kg_m3 <= 0 or not (0 < angle_deg <= 90):
             return jsonify({"error": "Invalid input parameters."}), 400
 
+        # Physical calculations
         radius_m = (diameter_km * 1000) / 2
         volume_m3 = (4/3) * pi * pow(radius_m, 3)
         mass_kg = volume_m3 * density_kg_m3
 
         velocity_m_s = velocity_km_s * 1000
         kinetic_energy_joules = 0.5 * mass_kg * pow(velocity_m_s, 2)
-        energy_megatons = kinetic_energy_joules / 4.184e15 
+        energy_megatons = kinetic_energy_joules / 4.184e15
 
         crater_diameter_km = diameter_km * pow(velocity_km_s / 20.0, 0.5) * pow(sin(angle_deg * pi / 180), 0.33)
         magnitude = 2 + 0.5 * pow(energy_megatons, 0.3)
@@ -62,5 +63,3 @@ def calculate_impact():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
-# Note: Ensure you have Flask and Flask-CORS installed in your environment:
-# pip install Flask Flask-CORS
