@@ -4,250 +4,29 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Asteroid Impact Simulator</title>
-    
-    <!-- External Libraries -->
+
+    <!-- Link to your CSS file -->
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Leaflet Map Library -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-    <style>
-        /* =======================
-            FONT IMPORTS
-        ======================= */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Orbitron:wght@600;800&display=swap');
-
-        /* =======================
-            ROOT VARIABLES
-        ======================= */
-        :root {
-            --font-main: 'Inter', system-ui, sans-serif;
-            --font-mono: 'Orbitron', monospace;
-            --bg: #121212;
-            --bg-panel: rgba(25, 30, 45, 0.85);
-            --text: #e5f4ff;
-            --muted: #88a1b3;
-            --accent: #00ffff;
-            --highlight: #00aaff;
-            --danger: #ef4444;
-            --ok: #22c55e;
-            --border: rgba(0, 255, 255, 0.2);
-            --shadow: 0 10px 30px rgba(0,0,0,0.35);
-            --gradient-primary: linear-gradient(135deg, var(--accent), var(--highlight));
-            --transition-speed: 0.3s;
-            --radius: 12px;
-        }
-
-        /* =======================
-            LIGHT MODE VARIABLES
-        ======================= */
-        body[data-theme="light"] {
-            --bg: #f9fafb;
-            --bg-panel: #ffffff;
-            --text: #1e293b;
-            --muted: #64748b;
-            --accent: #0066cc;
-            --highlight: #3399ff;
-            --danger: #dc2626;
-            --ok: #16a34a;
-            --border: rgba(0,0,0,0.08);
-            --shadow: 0 8px 25px rgba(100,116,139,0.1);
-            --gradient-primary: linear-gradient(135deg, var(--accent), var(--highlight));
-        }
-
-        /* =======================
-            GLOBAL STYLES
-        ======================= */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body {
-            height: 100%;
-            font-family: var(--font-main);
-            background: var(--bg);
-            color: var(--text);
-            transition: background var(--transition-speed), color var(--transition-speed);
-        }
-
-        /* =======================
-            HEADER
-        ======================= */
-        .app-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 18px 24px;
-            background: var(--bg-panel);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-            box-shadow: var(--shadow);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .app-title {
-            font-family: var(--font-mono);
-            font-size: 24px;
-            letter-spacing: 3px;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* =======================
-            MAIN LAYOUT (INSPIRED BY NEAL.FUN)
-        ======================= */
-        .app-main {
-            display: grid;
-            grid-template-columns: 420px 1fr;
-            gap: 24px;
-            padding: 24px;
-            max-width: 1800px;
-            margin: 0 auto;
-        }
-        .control-panel {
-            background: var(--bg-panel);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 24px;
-            backdrop-filter: blur(10px);
-        }
-        .display-area {
-            display: flex;
-            flex-direction: column;
-            border-radius: var(--radius);
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-
-        /* =======================
-            SECTION TITLES
-        ======================= */
-        .section-title {
-            font-family: var(--font-mono);
-            font-weight: 600;
-            font-size: 20px;
-            color: var(--accent);
-            margin-bottom: 24px;
-        }
-
-        /* =======================
-            FORM ELEMENTS
-        ======================= */
-        .form-group { margin-bottom: 20px; }
-        label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--muted);
-            margin-bottom: 8px;
-        }
-        label span:last-child {
-            font-weight: 700;
-            color: var(--text);
-        }
-        input[type="number"], input[type="range"], select {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            background: rgba(0,0,0,0.15);
-            color: var(--text);
-            font-family: inherit;
-            font-size: 1rem;
-            outline: none;
-            transition: all 0.2s;
-        }
-        input[type="range"] { padding: 0; }
-        body[data-theme="light"] input, body[data-theme="light"] select { background: #f3f4f6; }
-        input:focus, select:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(0,255,255,0.15);
-        }
-        body[data-theme="light"] input:focus, body[data-theme="light"] select:focus {
-            box-shadow: 0 0 0 3px rgba(0,102,204,0.15);
-        }
-
-        /* =======================
-            BUTTONS
-        ======================= */
-        .primary-btn {
-            padding: 14px;
-            width: 100%;
-            border: none;
-            border-radius: var(--radius);
-            background: var(--gradient-primary);
-            color: var(--bg);
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .primary-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,255,255,0.25);
-        }
-        .primary-btn:disabled {
-            background: rgba(128,128,128,0.2);
-            color: var(--muted);
-            cursor: not-allowed;
-        }
-
-        /* =======================
-            VISUALIZATION AREA
-        ======================= */
-        .viz-map {
-            flex: 1;
-            min-height: 80vh; /* Make map taller */
-        }
-        .leaflet-container { background: #000; }
-
-        /* =======================
-            RESULTS PANEL
-        ======================= */
-        .results-panel {
-            margin-top: 24px;
-            display: grid;
-            gap: 16px;
-            animation: fadeIn 0.5s;
-        }
-        .result-card {
-            background: rgba(0,0,0,0.2);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 16px;
-        }
-        body[data-theme="light"] .result-card { background: #f3f4f6; }
-        .result-title {
-            font-size: 0.8rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            color: var(--muted);
-            margin-bottom: 6px;
-        }
-        .result-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text);
-        }
-        .result-value.danger { color: var(--danger); }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* =======================
-            RESPONSIVE DESIGN
-        ======================= */
-        @media (max-width: 900px) {
-            .app-main { grid-template-columns: 1fr; }
-            .display-area { min-height: 60vh; }
-        }
-    </style>
 </head>
 <body data-theme="dark">
 
+    <!-- IMPROVEMENT: Welcome overlay for a cinematic start -->
+    <div id="welcomeOverlay" class="welcome-overlay">
+        <div class="welcome-card">
+            <h1 class="welcome-title">☄️ IMPACT SIMULATOR</h1>
+            <p class="welcome-subtitle">Model near-Earth object impacts in real-time, powered by NASA data.</p>
+            <button id="startBtn" class="primary-btn">Start Simulation</button>
+        </div>
+    </div>
+
+    <!-- Main Application Structure -->
     <header class="app-header">
         <h1 class="app-title">IMPACT SIMULATOR</h1>
-        <button id="themeToggleBtn" class="primary-btn" style="width: auto; padding: 8px 16px;">Toggle Theme</button>
+        <button id="themeToggleBtn" class="theme-toggle">🌗</button>
     </header>
 
     <main class="app-main">
@@ -255,17 +34,18 @@
             <h2 class="section-title">Simulation Parameters</h2>
 
             <div class="form-group">
-                <label for="materialSelect">Asteroid Material</label>
-                <select id="materialSelect">
-                    <option value="stone" selected>Stone (3000 kg/m³)</option>
-                    <option value="iron">Iron (8000 kg/m³)</option>
-                    <option value="comet">Comet (1000 kg/m³)</option>
+                <label for="asteroidSelect">Asteroid Preset</label>
+                <select id="asteroidSelect">
+                    <option value="">Loading presets...</option>
                 </select>
+                <!-- IMPROVEMENT: Description for selected preset -->
+                <p id="presetDescription" class="preset-description"></p>
             </div>
 
             <div class="form-group">
+                <!-- IMPROVEMENT: Live value display in the label -->
                 <label for="diameterInput">Diameter (km): <span id="diameterValue">1.5</span></label>
-                <input type="range" id="diameterInput" min="0.1" max="10" step="0.1" value="1.5">
+                <input type="range" id="diameterInput" min="0.1" max="20" step="0.1" value="1.5">
             </div>
 
             <div class="form-group">
@@ -278,9 +58,17 @@
                 <input type="range" id="angleInput" value="45" min="15" max="90" step="1">
             </div>
             
-            <button id="simulateImpactBtn" class="primary-btn">LAUNCH</button>
+            <div class="form-group">
+                <label for="densityInput">Density (kg/m³)</label>
+                <input type="number" id="densityInput" value="2700" step="100">
+            </div>
             
-            <div id="resultsDisplay"></div>
+            <button id="simulateImpactBtn" class="primary-btn">LAUNCH</button>
+
+            <!-- IMPROVEMENT: Structured results console -->
+            <div id="resultsDisplay" class="results-console">
+                <p class="console-text muted">Awaiting simulation parameters...</p>
+            </div>
         </section>
 
         <section class="display-area" id="impact-map-container">
@@ -288,128 +76,13 @@
         </section>
     </main>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- CONFIGURATION ---
-            const BACKEND_URL = 'http://127.0.0.1:5001';
-            let impactLocation = { lat: 28.7, lng: 77.1 }; // Default to New Delhi
+    <!-- IMPROVEMENT: Credits footer -->
+    <footer class="app-footer">
+        <p>Powered by NASA Open Data | Hackathon 2025</p>
+    </footer>
 
-            // --- DOM ELEMENTS ---
-            const elements = {
-                themeToggle: document.getElementById('themeToggleBtn'),
-                material: document.getElementById('materialSelect'),
-                diameter: document.getElementById('diameterInput'),
-                velocity: document.getElementById('velocityInput'),
-                angle: document.getElementById('angleInput'),
-                diameterValue: document.getElementById('diameterValue'),
-                velocityValue: document.getElementById('velocityValue'),
-                angleValue: document.getElementById('angleValue'),
-                simulateBtn: document.getElementById('simulateImpactBtn'),
-                resultsDisplay: document.getElementById('resultsDisplay')
-            };
-
-            // --- THEME ---
-            elements.themeToggle.addEventListener('click', () => {
-                const newTheme = document.body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-                document.body.setAttribute('data-theme', newTheme);
-            });
-
-            // --- MAP SETUP ---
-            const map = L.map('impact-map-container').setView([20, 0], 2);
-            let mapTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; CartoDB', noWrap: true
-            }).addTo(map);
-            
-            let marker = L.marker(impactLocation, { draggable: true }).addTo(map);
-            let craterCircle;
-            
-            marker.on('dragend', (event) => impactLocation = event.target.getLatLng());
-            map.on('click', (e) => {
-                impactLocation = e.latlng;
-                marker.setLatLng(impactLocation);
-            });
-
-            // --- SLIDER VALUE DISPLAYS ---
-            ['diameter', 'velocity', 'angle'].forEach(id => {
-                elements[id].addEventListener('input', (e) => {
-                    elements[`${id}Value`].textContent = e.target.value;
-                });
-            });
-
-            // --- SIMULATION ---
-            elements.simulateBtn.addEventListener('click', async () => {
-                const payload = {
-                    material: elements.material.value,
-                    diameter_km: parseFloat(elements.diameter.value),
-                    velocity_kps: parseFloat(elements.velocity.value),
-                    angle_degrees: parseFloat(elements.angle.value)
-                };
-                
-                elements.simulateBtn.disabled = true;
-                elements.simulateBtn.textContent = 'CALCULATING...';
-                elements.resultsDisplay.innerHTML = '';
-
-                try {
-                    const response = await fetch(`${BACKEND_URL}/api/launch-asteroid`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
-                    
-                    const results = await response.json();
-                    displayResults(results);
-                } catch (error) {
-                    console.error("Simulation error:", error);
-                    elements.resultsDisplay.innerHTML = `<p style="color:var(--danger)">Simulation Failed. Is the backend server running?</p>`;
-                } finally {
-                    elements.simulateBtn.disabled = false;
-                    elements.simulateBtn.textContent = 'LAUNCH';
-                }
-            });
-
-            // --- UI DISPLAY ---
-            function displayResults(results) {
-                const energy = results.energy.megatons_tnt;
-                const crater = results.crater.diameter_km;
-                const magnitude = results.earthquake.magnitude;
-
-                elements.resultsDisplay.innerHTML = `
-                    <h2 class="section-title" style="margin-top: 24px;">Impact Report</h2>
-                    <div class="results-panel">
-                        <div class="result-card">
-                            <p class="result-title">Impact Energy</p>
-                            <p class="result-value ${energy > 1000 ? 'danger' : ''}">${energy.toLocaleString()} <small>MT of TNT</small></p>
-                        </div>
-                        <div class="result-card">
-                            <p class="result-title">Crater Diameter</p>
-                            <p class="result-value ${crater > 10 ? 'danger' : ''}">${crater.toLocaleString()} <small>km</small></p>
-                        </div>
-                        <div class="result-card">
-                            <p class="result-title">Earthquake</p>
-                            <p class="result-value ${magnitude > 7 ? 'danger' : ''}">M ${magnitude.toLocaleString()}</p>
-                        </div>
-                        <div class="result-card">
-                            <p class="result-title">Consequences</p>
-                            <p>${results.human_impacts[0]}</p>
-                        </div>
-                    </div>
-                `;
-
-                if (craterCircle) craterCircle.remove();
-                if (crater > 0) {
-                    const craterRadiusMeters = crater * 1000 / 2;
-                    craterCircle = L.circle(impactLocation, {
-                        radius: craterRadiusMeters,
-                        color: 'var(--danger)',
-                        fillColor: 'var(--danger)',
-                        fillOpacity: 0.3
-                    }).addTo(map);
-                    map.fitBounds(craterCircle.getBounds(), { padding: [50, 50] });
-                }
-            }
-        });
-    </script>
+    <!-- Link to your JavaScript file -->
+    <script src="script.js"></script>
 </body>
 </html>
 
