@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- CONFIGURATION ---
     // IMPORTANT: This URL must match the address of your running Python backend.
-    const BACKEND_URL = 'http://127.0.0.1:5000';
+    const BACKEND_URL = 'https://asteroid-sim.onrender.com';
     let impactLocation = { lat: 28.7, lng: 77.1 }; // Default impact location
 
     // --- DOM ELEMENTS ---
@@ -181,3 +181,4 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // End of script.js
+
