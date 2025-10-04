@@ -5,6 +5,9 @@ import json
 
 app = Flask(__name__)
 CORS(app)
+@app.route("/")
+def index():
+    return "Asteroid Impact Simulator API is running."
 
 # Load asteroid data from local JSON file
 with open('asteroid_data.json', 'r') as f:
@@ -63,3 +66,4 @@ def calculate_impact():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
+
