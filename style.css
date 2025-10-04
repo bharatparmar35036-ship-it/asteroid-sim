@@ -281,4 +281,76 @@ input[type="range"] {
     height: 8px;
     background: rgba(0,0,0,0.3);
     border-radius: 4px;
-    padding:
+    padding: 0;
+}
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid var(--bg-panel);
+    transition: transform 0.2s;
+}
+input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid var(--bg-panel);
+}
+input[type="range"]:hover::-webkit-slider-thumb {
+    transform: scale(1.1);
+}
+
+.primary-btn {
+    padding: 14px;
+    width: 100%;
+    border: none;
+    border-radius: var(--radius);
+    background: var(--gradient-primary);
+    color: #000;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.primary-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(79,209,255,0.3);
+}
+.primary-btn:disabled {
+    background: rgba(128,128,128,0.2);
+    color: var(--muted);
+    cursor: not-allowed;
+}
+
+/* Results Console Styling */
+.results-console {
+    margin-top: 24px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    min-height: 150px;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.6;
+}
+body[data-theme="light"] .results-console { background: #f3f4f6; }
+.console-text { animation: fadeIn 0.5s; margin-bottom: 8px;}
+.console-text.muted { color: var(--muted); }
+.console-text.success { color: var(--ok); }
+.console-text.error { color: var(--danger); }
+.preset-description { font-size: 12px; margin-top: 8px; color: var(--muted); }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@media (max-width: 900px) { 
+    .app-main { grid-template-columns: 1fr; }
+    .display-area { min-height: 60vh; }
+}
+
+/* End of style.css */
