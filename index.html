@@ -1,88 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Asteroid Impact Simulator</title>
-
-    <!-- Link to your CSS file -->
-    <link rel="stylesheet" href="style.css" />
-
-    <!-- Leaflet Map Library -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asteroid Impact Simulator</title>
+  <!-- Link to separate CSS file -->
+  <link rel="stylesheet" href="style.css" />
+  <!-- Leaflet Map Library -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body data-theme="dark">
 
-    <!-- IMPROVEMENT: Welcome overlay for a cinematic start -->
-    <div id="welcomeOverlay" class="welcome-overlay">
-        <div class="welcome-card">
-            <h1 class="welcome-title">☄️ IMPACT SIMULATOR</h1>
-            <p class="welcome-subtitle">Model near-Earth object impacts in real-time, powered by NASA data.</p>
-            <button id="startBtn" class="primary-btn">Start Simulation</button>
-        </div>
+  <!-- Cinematic Welcome Overlay -->
+  <div id="welcomeOverlay" class="welcome-overlay">
+    <div class="welcome-card">
+      <h1 class="welcome-title">☄️ IMPACT SIMULATOR</h1>
+      <p class="welcome-subtitle">
+        Model near-Earth object impacts in real-time, powered by NASA data.
+      </p>
+      <button id="startBtn" class="primary-btn">Start Simulation</button>
     </div>
+  </div>
 
-    <!-- Main Application Structure -->
-    <header class="app-header">
-        <h1 class="app-title">IMPACT SIMULATOR</h1>
-        <button id="themeToggleBtn" class="theme-toggle">🌗</button>
-    </header>
+  <header class="app-header">
+    <h1 class="app-title">IMPACT SIMULATOR</h1>
+    <button id="themeToggleBtn" class="theme-toggle">🌗</button>
+  </header>
 
-    <main class="app-main">
-        <section class="control-panel">
-            <h2 class="section-title">Simulation Parameters</h2>
+  <main class="app-main">
+    <section class="control-panel">
+      <h2 class="section-title">Simulation Parameters</h2>
+      <div class="form-group">
+        <label for="asteroidSelect">Asteroid Preset</label>
+        <select id="asteroidSelect">
+          <option value="">Loading presets...</option>
+        </select>
+        <p id="presetDescription" class="preset-description"></p>
+      </div>
 
-            <div class="form-group">
-                <label for="asteroidSelect">Asteroid Preset</label>
-                <select id="asteroidSelect">
-                    <option value="">Loading presets...</option>
-                </select>
-                <!-- IMPROVEMENT: Description for selected preset -->
-                <p id="presetDescription" class="preset-description"></p>
-            </div>
+      <div class="form-group">
+        <label for="diameterInput">Diameter (km): <span id="diameterValue">1.5</span></label>
+        <input type="range" id="diameterInput" min="0.1" max="20" step="0.1" value="1.5">
+      </div>
 
-            <div class="form-group">
-                <!-- IMPROVEMENT: Live value display in the label -->
-                <label for="diameterInput">Diameter (km): <span id="diameterValue">1.5</span></label>
-                <input type="range" id="diameterInput" min="0.1" max="20" step="0.1" value="1.5">
-            </div>
+      <div class="form-group">
+        <label for="velocityInput">Velocity (km/s): <span id="velocityValue">20</span></label>
+        <input type="range" id="velocityInput" min="11" max="72" step="1" value="20">
+      </div>
 
-            <div class="form-group">
-                <label for="velocityInput">Velocity (km/s): <span id="velocityValue">20</span></label>
-                <input type="range" id="velocityInput" min="11" max="72" step="1" value="20">
-            </div>
+      <div class="form-group">
+        <label for="angleInput">Impact Angle (°): <span id="angleValue">45</span></label>
+        <input type="range" id="angleInput" min="15" max="90" step="1" value="45">
+      </div>
 
-            <div class="form-group">
-                <label for="angleInput">Impact Angle (°): <span id="angleValue">45</span></label>
-                <input type="range" id="angleInput" value="45" min="15" max="90" step="1">
-            </div>
-            
-            <div class="form-group">
-                <label for="densityInput">Density (kg/m³)</label>
-                <input type="number" id="densityInput" value="2700" step="100">
-            </div>
-            
-            <button id="simulateImpactBtn" class="primary-btn">LAUNCH</button>
+      <div class="form-group">
+        <label for="densityInput">Density (kg/m³)</label>
+        <input type="number" id="densityInput" value="2700" step="100">
+      </div>
 
-            <!-- IMPROVEMENT: Structured results console -->
-            <div id="resultsDisplay" class="results-console">
-                <p class="console-text muted">Awaiting simulation parameters...</p>
-            </div>
-        </section>
+      <button id="simulateImpactBtn" class="primary-btn">LAUNCH</button>
+      <div id="resultsDisplay" class="results-console">
+        <p class="console-text muted">Awaiting simulation parameters...</p>
+      </div>
+    </section>
 
-        <section class="display-area" id="impact-map-container">
-            <!-- Leaflet Map will be initialized here -->
-        </section>
-    </main>
+    <section class="display-area" id="impact-map-container"></section>
+  </main>
 
-    <!-- IMPROVEMENT: Credits footer -->
-    <footer class="app-footer">
-        <p>Powered by NASA Open Data | Hackathon 2025</p>
-    </footer>
-
-    <!-- Link to your JavaScript file -->
-    <script src="script.js"></script>
+  <footer class="app-footer">
+    <p>Powered by NASA Open Data | Hackathon 2025</p>
+  </footer>
+  <!-- Link to your JS, update BACKEND_URL inside to your Render URL -->
+  <script src="script.js"></script>
 </body>
 </html>
-
