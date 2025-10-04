@@ -22,7 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
         velocityValue: document.getElementById('velocityValue'),
         angleValue: document.getElementById('angleValue'),
         simulateBtn: document.getElementById('simulateImpactBtn'),
-        resultsDisplay: document.getElementById('resultsDisplay')
+        resultsDisplay: document.getElementById('resultsDisplay'),
+        mapContainer: document.getElementById('impact-map-container')
     };
 
     // --- THEME & OVERLAY LOGIC ---
@@ -33,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     elements.startBtn.addEventListener('click', () => {
         elements.welcomeOverlay.classList.add('hidden');
+        elements.mapContainer.style.display = 'block'; // Show the map after simulation starts
     });
 
     // --- MAP SETUP ---
