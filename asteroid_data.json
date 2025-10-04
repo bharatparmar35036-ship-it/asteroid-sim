@@ -1,0 +1,86 @@
+[
+  {
+    "id": "apophis",
+    "name": "Apophis",
+    "diameter_km": 0.37,
+    "typical_velocity_km_s": 30,
+    "composition": "stony"
+  },
+  {
+    "id": "bennu",
+    "name": "Bennu",
+    "diameter_km": 0.49,
+    "typical_velocity_km_s": 28,
+    "composition": "carbonaceous"
+  },
+  {
+    "id": "didymos",
+    "name": "Didymos",
+    "diameter_km": 0.78,
+    "typical_velocity_km_s": 25,
+    "composition": "stony-metallic"
+  },
+  {
+    "id": "ganymed",
+    "name": "Ganymed",
+    "diameter_km": 32.0,
+    "typical_velocity_km_s": 15,
+    "composition": "stony-iron"
+  },
+  {
+    "id": "eris",
+    "name": "Eris",
+    "diameter_km": 2326,
+    "typical_velocity_km_s": 5,
+    "composition": "ice-rich"
+  },
+  {
+    "id": "vesta",
+    "name": "Vesta",
+    "diameter_km": 525.4,
+    "typical_velocity_km_s": 20,
+    "composition": "stony"
+  },
+  {
+    "id": "pallas",
+    "name": "Pallas",
+    "diameter_km": 512,
+    "typical_velocity_km_s": 18,
+    "composition": "stony"
+  },
+  {
+    "id": "ida",
+    "name": "Ida",
+    "diameter_km": 31.4,
+    "typical_velocity_km_s": 17,
+    "composition": "stony-metallic"
+  },
+  {
+    "id": "mathilde",
+    "name": "Mathilde",
+    "diameter_km": 52.8,
+    "typical_velocity_km_s": 14,
+    "composition": "carbonaceous"
+  },
+  {
+    "id": "esta",
+    "name": "Eros",
+    "diameter_km": 16.8,
+    "typical_velocity_km_s": 24,
+    "composition": "stony-iron"
+  },
+  {
+    "id": "toutatis",
+    "name": "Toutatis",
+    "diameter_km": 2.5,
+    "typical_velocity_km_s": 27,
+    "composition": "stony"
+  },
+  {
+    "id": "ceres",
+    "name": "Ceres",
+    "diameter_km": 939.4,
+    "typical_velocity_km_s": 17,
+    "composition": "rock-ice"
+  }
+]
