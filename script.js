@@ -1,13 +1,9 @@
-// script.js - Impact Simulator Final Logic
-
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- CONFIGURATION ---
     const BACKEND_URL = 'https://asteroid-sim.onrender.com';
-    const API_KEY = 'kb2rQhWfRQWpsD5m6FmI90mDGeMn7pOASwqAiaYZ'; // place your API key here if needed
-    let impactLocation = { lat: 28.7, lng: 77.1 }; // Default impact location
+    const API_KEY = 'kb2rQhWfRQWpsD5m6FmI90mDGeMn7pOASwqAiaYZ';
+    let impactLocation = { lat: 28.7, lng: 77.1 };
 
-    // --- DOM ELEMENTS ---
     const elements = {
         welcomeOverlay: document.getElementById('welcomeOverlay'),
         startBtn: document.getElementById('startBtn'),
@@ -32,9 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         document.body.setAttribute('data-theme', newTheme);
     });
+
     elements.startBtn.addEventListener('click', () => {
         elements.welcomeOverlay.classList.add('hidden');
-        elements.mapContainer.style.display = 'block'; // Show the map after simulation starts
+        elements.mapContainer.style.display = 'block';
+        setTimeout(() => map.invalidateSize(), 200); // Ensures map renders after becoming visible
     });
 
     // --- MAP SETUP ---
@@ -68,20 +66,27 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
 
             elements.asteroidSelect.innerHTML = '<option value="">Custom Simulation</option>';
+            if (!data.asteroids || data.asteroids.length === 0) {
+                elements.asteroidSelect.innerHTML += '<option disabled>No presets available</option>';
+                return;
+            }
             data.asteroids.forEach(asteroid => {
                 const option = document.createElement('option');
                 option.value = asteroid.id;
                 option.textContent = asteroid.name;
-                option.dataset.diameter = asteroid.diameter_km;
-                option.dataset.velocity = asteroid.typical_velocity_km_s;
-                option.dataset.composition = asteroid.composition;
+                option.dataset.diameter = asteroid.diameter_km || 1.5;
+                option.dataset.velocity = asteroid.typical_velocity_km_s || 20;
+                option.dataset.composition = asteroid.composition || 'stony';
+                option.disabled = false;
                 elements.asteroidSelect.appendChild(option);
             });
+            elements.asteroidSelect.disabled = false;
         } catch (error) {
             console.error("Failed to load presets:", error);
             elements.asteroidSelect.innerHTML = '<option value="">Could not load presets</option>';
             elements.presetDescription.textContent = 'Error: Backend server appears to be offline or invalid API key.';
-            elements.presetDescription.style.color = 'var(--danger)';
+            elements.presetDescription.style.color = '#f00';
+            elements.asteroidSelect.disabled = true;
         }
     }
 
@@ -101,8 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.velocity.value = selected.dataset.velocity;
             elements.diameterValue.textContent = selected.dataset.diameter;
             elements.velocityValue.textContent = selected.dataset.velocity;
-
-            // Autofill density based on composition
             const composition = (selected.dataset.composition || 'stony').toLowerCase();
             elements.density.value = {
                 "stony": 2700,
@@ -112,7 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 "ice-rich": 900,
                 "rock-ice": 1500
             }[composition] || 2700;
-
             elements.presetDescription.textContent =
                 `Preset loaded: ${selected.dataset.diameter} km, ${selected.dataset.velocity} km/s, ${composition} body.`;
             elements.presetDescription.style.color = '';
@@ -175,7 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }, (index + 1) * 300);
         });
 
-        // Shockwave animation at impact location
         const mapContainer = document.getElementById('impact-map-container');
         const shockwave = document.createElement('div');
         shockwave.className = 'shockwave';
@@ -185,14 +186,13 @@ document.addEventListener('DOMContentLoaded', () => {
         mapContainer.appendChild(shockwave);
         setTimeout(() => shockwave.remove(), 1000);
 
-        // Draw crater on map
         if (craterCircle) craterCircle.remove();
         if (impact.estimated_crater_diameter_km > 0) {
             const craterRadiusMeters = impact.estimated_crater_diameter_km * 1000 / 2;
             craterCircle = L.circle(impactLocation, {
                 radius: craterRadiusMeters,
-                color: 'var(--danger)',
-                fillColor: 'var(--danger)',
+                color: '#f00',
+                fillColor: '#f00',
                 fillOpacity: 0.3
             }).addTo(map);
             map.fitBounds(craterCircle.getBounds(), { padding: [50, 50] });
@@ -201,5 +201,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- INITIALIZATION ---
     loadAsteroidPresets();
-
 });
