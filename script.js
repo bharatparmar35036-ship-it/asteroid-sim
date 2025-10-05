@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         mapContainer: document.getElementById('impact-map-container')
     };
 
-    // --- THEME & OVERLAY LOGIC ---
+    // Theme & Overlay Logic
     elements.themeToggle.addEventListener('click', () => {
         const currentTheme = document.body.getAttribute('data-theme');
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -32,10 +32,10 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.startBtn.addEventListener('click', () => {
         elements.welcomeOverlay.classList.add('hidden');
         elements.mapContainer.style.display = 'block';
-        setTimeout(() => map.invalidateSize(), 200); // Ensures map renders after becoming visible
+        setTimeout(() => map.invalidateSize(), 200); // Ensures map renders after visible
     });
 
-    // --- MAP SETUP ---
+    // Map Setup
     const map = L.map('impact-map-container').setView([20, 0], 2);
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; CartoDB', noWrap: true
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
         marker.setLatLng(impactLocation);
     });
 
-    // --- API & DATA HANDLING ---
+    // API & Data Handling
     async function loadAsteroidPresets() {
         try {
             const response = await fetch(`${BACKEND_URL}/asteroid_gallery`, {
@@ -90,14 +90,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- SLIDER VALUE DISPLAY UPDATES ---
+    // Slider Value Display Updates
     ['diameter', 'velocity', 'angle'].forEach(id => {
         elements[id].addEventListener('input', (e) => {
             elements[`${id}Value`].textContent = e.target.value;
         });
     });
 
-    // --- ASTEROID SELECTION EVENT ---
+    // Asteroid Selection Event
     elements.asteroidSelect.addEventListener('change', (e) => {
         const selected = e.target.options[e.target.selectedIndex];
         elements.presetDescription.textContent = '';
@@ -115,13 +115,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 "ice-rich": 900,
                 "rock-ice": 1500
             }[composition] || 2700;
-            elements.presetDescription.textContent =
+            elements.presetDescription.textContent = 
                 `Preset loaded: ${selected.dataset.diameter} km, ${selected.dataset.velocity} km/s, ${composition} body.`;
             elements.presetDescription.style.color = '';
         }
     });
 
-    // --- IMPACT SIMULATION BUTTON EVENT ---
+    // Impact Simulation Button Event
     elements.simulateBtn.addEventListener('click', async () => {
         const payload = {
             diameter_km: parseFloat(elements.diameter.value),
@@ -144,7 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(payload)
             });
             if (!response.ok) throw new Error(`Server error: ${response.statusText}`);
-
             const results = await response.json();
             displayResults(results.impact_results);
         } catch (error) {
@@ -157,17 +156,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- DISPLAY SIMULATION RESULTS ---
+    // Display Simulation Results
     function displayResults(impact) {
         elements.resultsDisplay.innerHTML = `<p class="console-text success">Receiving report...</p>`;
-
         const lines = [
             `> Impact Energy: <strong>${impact.calculated_energy_megatons_tnt.toLocaleString('en-US', {maximumFractionDigits: 2})} MT</strong>`,
             `> Crater Diameter: <strong>${impact.estimated_crater_diameter_km.toLocaleString('en-US', {maximumFractionDigits: 2})} km</strong>`,
             `> Seismic Magnitude: <strong>M ${impact.estimated_equivalent_magnitude.toLocaleString('en-US', {maximumFractionDigits: 1})}</strong>`,
             `> Assessment: <em>${impact.damage_description}</em>`
         ];
-
         lines.forEach((line, index) => {
             setTimeout(() => {
                 const p = document.createElement('p');
@@ -176,7 +173,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 elements.resultsDisplay.appendChild(p);
             }, (index + 1) * 300);
         });
-
         const mapContainer = document.getElementById('impact-map-container');
         const shockwave = document.createElement('div');
         shockwave.className = 'shockwave';
@@ -185,7 +181,6 @@ document.addEventListener('DOMContentLoaded', () => {
         shockwave.style.top = `${point.y - 25}px`;
         mapContainer.appendChild(shockwave);
         setTimeout(() => shockwave.remove(), 1000);
-
         if (craterCircle) craterCircle.remove();
         if (impact.estimated_crater_diameter_km > 0) {
             const craterRadiusMeters = impact.estimated_crater_diameter_km * 1000 / 2;
@@ -199,6 +194,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- INITIALIZATION ---
+    // Initialization
     loadAsteroidPresets();
 });
