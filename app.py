@@ -5,33 +5,37 @@ import json
 
 app = Flask(__name__)
 CORS(app)
+
 @app.route("/")
 def index():
     return "Asteroid Impact Simulator API is running."
 
-# Load asteroid data from local JSON file
-with open('asteroid_data.json', 'r') as f:
-    ASTEROID_PRESETS = json.load(f)
+# Load asteroid data once on startup
+try:
+    with open('asteroid_data.json', 'r') as f:
+        ASTEROID_PRESETS = json.load(f)
+except Exception as e:
+    print(f"Error loading asteroid presets: {e}")
+    ASTEROID_PRESETS = []
 
 @app.route('/asteroid_gallery', methods=['GET'])
 def asteroid_gallery():
-    # Return asteroid presets dynamically loaded from JSON file
     return jsonify({"asteroids": ASTEROID_PRESETS})
 
 @app.route('/calculate_impact', methods=['POST'])
 def calculate_impact():
     try:
-        data = request.get_json()
+        data = request.get_json(force=True)
+        diameter_km = float(data.get('diameter_km', 0))
+        velocity_km_s = float(data.get('velocity_km_s', 0))
+        density_kg_m3 = float(data.get('density_kg_m3', 0))
+        angle_deg = float(data.get('angle_degrees', 0))
 
-        diameter_km = float(data.get('diameter_km'))
-        velocity_km_s = float(data.get('velocity_km_s'))
-        density_kg_m3 = float(data.get('density_kg_m3'))
-        angle_deg = float(data.get('angle_degrees'))
-
+        # Validate inputs
         if diameter_km <= 0 or velocity_km_s <= 0 or density_kg_m3 <= 0 or not (0 < angle_deg <= 90):
             return jsonify({"error": "Invalid input parameters."}), 400
 
-        # Physical calculations
+        # Calculate mass, energy, crater and magnitude
         radius_m = (diameter_km * 1000) / 2
         volume_m3 = (4/3) * pi * pow(radius_m, 3)
         mass_kg = volume_m3 * density_kg_m3
@@ -43,6 +47,7 @@ def calculate_impact():
         crater_diameter_km = diameter_km * pow(velocity_km_s / 20.0, 0.5) * pow(sin(angle_deg * pi / 180), 0.33)
         magnitude = 2 + 0.5 * pow(energy_megatons, 0.3)
 
+        # Determine damage description
         if energy_megatons > 1000:
             damage = "Global catastrophic impact potential."
         elif energy_megatons > 50:
@@ -60,10 +65,9 @@ def calculate_impact():
                 "damage_description": damage
             }
         })
-
     except Exception as e:
-        return jsonify({"error": f"Server or input error: {str(e)}"}), 400
+        # In production, avoid returning detailed errors
+        return jsonify({"error": "Server or input error."}), 400
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
-
